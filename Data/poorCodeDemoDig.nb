@@ -1,0 +1,1270 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     33407,       1260]
+NotebookOptionsPosition[     31197,       1194]
+NotebookOutlinePosition[     31902,       1218]
+CellTagsIndexPosition[     31859,       1215]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\<\
+Kernel Perceptron for Handwritten Digit Recognition HW5 (GI03)\
+\>", "Title"],
+
+Cell["Note this code is DESIGNED to be INEFFICIENT.", "Subsubtitle"],
+
+Cell["Limits output to 20 lines Convenient for debugging code", "Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"$PrePrint", "=", 
+   RowBox[{
+    RowBox[{"Short", "[", 
+     RowBox[{"#", ",", "20"}], "]"}], "&"}]}], ";"}]], "Input"],
+
+Cell["Turn off spell warnings \"feature\" (use with caution)", "Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Off", "[", 
+   RowBox[{
+    RowBox[{"General", "::", "spell1"}], ",", 
+    RowBox[{"General", "::", "spell2"}], ",", 
+    RowBox[{"General", "::", "spell3"}]}], "]"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Turn", " ", "off", " ", "spell", " ", "warnings"}], " ", 
+   "*)"}]}]], "Input"],
+
+Cell["Import Data", "Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"dtrain123", "=", 
+   RowBox[{"Import", "[", 
+    RowBox[{"\"\<dtrain123.dat\>\"", ",", "\"\<Table\>\""}], "]"}]}], " ", 
+  ";"}]], "Input"],
+
+Cell["\<\
+329 Data Items with 257 fields the first field is the character the 2nd the \
+remaining 256 are scaled greyvalues\
+\>", "Commentary"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Dimensions", "[", "dtrain123", "]"}]], "Input"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"{", 
+   RowBox[{"329", ",", "257"}], "}"}],
+  Short[#, 20]& ]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"dtest123", "=", 
+   RowBox[{"Import", "[", 
+    RowBox[{"\"\<dtest123.dat\>\"", ",", "\"\<Table\>\""}], "]"}]}], " ", 
+  ";"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotChar", "[", "char_", "]"}], ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"data", ",", "rep"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"rep", " ", "=", " ", 
+       RowBox[{"Take", "[", 
+        RowBox[{"char", ",", 
+         RowBox[{"{", 
+          RowBox[{"2", ",", "257"}], "}"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"data", " ", "=", " ", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"rep", "[", 
+          RowBox[{"[", 
+           RowBox[{
+            RowBox[{"16", "*", "i"}], "+", "j", "+", "1"}], "]"}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"i", ",", "15", ",", "0", ",", 
+           RowBox[{"-", "1"}]}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"j", ",", "0", ",", "15"}], "}"}]}], "]"}]}], " ", ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ListDensityPlot", "[", 
+       RowBox[{"data", ",", " ", 
+        RowBox[{"Mesh", " ", "->", " ", "False"}], ",", 
+        RowBox[{"PlotLabel", "->", 
+         RowBox[{"\"\<The number \>\"", "<>", 
+          RowBox[{"ToString", "[", 
+           RowBox[{"char", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], "]"}]}]}]}], "]"}], ";"}]}], 
+    "\[IndentingNewLine]", "]"}]}], " ", ";"}]], "Input"],
+
+Cell["Here we now plot the first character in the training set", "Commentary"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"plotChar", "[", 
+  RowBox[{"dtrain123", "[", 
+   RowBox[{"[", "1", "]"}], "]"}], "]"}]], "Input"],
+
+Cell[GraphicsData["PostScript", "\<\
+%!
+%%Creator: Mathematica
+%%AspectRatio: 1 
+MathPictureStart
+/Mabs {
+Mgmatrix idtransform
+Mtmatrix dtransform
+} bind def
+/Mabsadd { Mabs
+3 -1 roll add
+3 1 roll add
+exch } bind def
+%% DensityGraphics
+%%IncludeResource: font Courier
+%%IncludeFont: Courier
+/Courier findfont 10  scalefont  setfont
+% Scaling calculations
+0.0192308 0.0600962 0.0192308 0.0600962 [
+[.01923 -0.0125 -3 -9 ]
+[.01923 -0.0125 3 0 ]
+[.16947 -0.0125 -9 -9 ]
+[.16947 -0.0125 9 0 ]
+[.31971 -0.0125 -3 -9 ]
+[.31971 -0.0125 3 0 ]
+[.46995 -0.0125 -9 -9 ]
+[.46995 -0.0125 9 0 ]
+[.62019 -0.0125 -6 -9 ]
+[.62019 -0.0125 6 0 ]
+[.77043 -0.0125 -12 -9 ]
+[.77043 -0.0125 12 0 ]
+[.92067 -0.0125 -6 -9 ]
+[.92067 -0.0125 6 0 ]
+[ 0 0 -0.125 0 ]
+[-0.0125 .01923 -6 -4.5 ]
+[-0.0125 .01923 0 4.5 ]
+[-0.0125 .16947 -18 -4.5 ]
+[-0.0125 .16947 0 4.5 ]
+[-0.0125 .31971 -6 -4.5 ]
+[-0.0125 .31971 0 4.5 ]
+[-0.0125 .46995 -18 -4.5 ]
+[-0.0125 .46995 0 4.5 ]
+[-0.0125 .62019 -12 -4.5 ]
+[-0.0125 .62019 0 4.5 ]
+[-0.0125 .77043 -24 -4.5 ]
+[-0.0125 .77043 0 4.5 ]
+[-0.0125 .92067 -12 -4.5 ]
+[-0.0125 .92067 0 4.5 ]
+[ 0 0 -0.125 0 ]
+[ 0 1 .125 0 ]
+[ 1 0 .125 0 ]
+[.5 1.0125 -50 0 ]
+[.5 1.0125 50 12 ]
+[ 0 0 0 0 ]
+[ 1 1 0 0 ]
+] MathScale
+% Start of Graphics
+1 setlinecap
+1 setlinejoin
+newpath
+0 g
+.25 Mabswid
+[ ] 0 setdash
+.01923 0 m
+.01923 .00625 L
+s
+[(0)] .01923 -0.0125 0 1 Mshowa
+.16947 0 m
+.16947 .00625 L
+s
+[(2.5)] .16947 -0.0125 0 1 Mshowa
+.31971 0 m
+.31971 .00625 L
+s
+[(5)] .31971 -0.0125 0 1 Mshowa
+.46995 0 m
+.46995 .00625 L
+s
+[(7.5)] .46995 -0.0125 0 1 Mshowa
+.62019 0 m
+.62019 .00625 L
+s
+[(10)] .62019 -0.0125 0 1 Mshowa
+.77043 0 m
+.77043 .00625 L
+s
+[(12.5)] .77043 -0.0125 0 1 Mshowa
+.92067 0 m
+.92067 .00625 L
+s
+[(15)] .92067 -0.0125 0 1 Mshowa
+.125 Mabswid
+.04928 0 m
+.04928 .00375 L
+s
+.07933 0 m
+.07933 .00375 L
+s
+.10938 0 m
+.10938 .00375 L
+s
+.13942 0 m
+.13942 .00375 L
+s
+.19952 0 m
+.19952 .00375 L
+s
+.22957 0 m
+.22957 .00375 L
+s
+.25962 0 m
+.25962 .00375 L
+s
+.28966 0 m
+.28966 .00375 L
+s
+.34976 0 m
+.34976 .00375 L
+s
+.37981 0 m
+.37981 .00375 L
+s
+.40986 0 m
+.40986 .00375 L
+s
+.4399 0 m
+.4399 .00375 L
+s
+.5 0 m
+.5 .00375 L
+s
+.53005 0 m
+.53005 .00375 L
+s
+.5601 0 m
+.5601 .00375 L
+s
+.59014 0 m
+.59014 .00375 L
+s
+.65024 0 m
+.65024 .00375 L
+s
+.68029 0 m
+.68029 .00375 L
+s
+.71034 0 m
+.71034 .00375 L
+s
+.74038 0 m
+.74038 .00375 L
+s
+.80048 0 m
+.80048 .00375 L
+s
+.83053 0 m
+.83053 .00375 L
+s
+.86058 0 m
+.86058 .00375 L
+s
+.89063 0 m
+.89063 .00375 L
+s
+.95072 0 m
+.95072 .00375 L
+s
+.98077 0 m
+.98077 .00375 L
+s
+.25 Mabswid
+0 0 m
+1 0 L
+s
+0 .01923 m
+.00625 .01923 L
+s
+[(0)] -0.0125 .01923 1 0 Mshowa
+0 .16947 m
+.00625 .16947 L
+s
+[(2.5)] -0.0125 .16947 1 0 Mshowa
+0 .31971 m
+.00625 .31971 L
+s
+[(5)] -0.0125 .31971 1 0 Mshowa
+0 .46995 m
+.00625 .46995 L
+s
+[(7.5)] -0.0125 .46995 1 0 Mshowa
+0 .62019 m
+.00625 .62019 L
+s
+[(10)] -0.0125 .62019 1 0 Mshowa
+0 .77043 m
+.00625 .77043 L
+s
+[(12.5)] -0.0125 .77043 1 0 Mshowa
+0 .92067 m
+.00625 .92067 L
+s
+[(15)] -0.0125 .92067 1 0 Mshowa
+.125 Mabswid
+0 .04928 m
+.00375 .04928 L
+s
+0 .07933 m
+.00375 .07933 L
+s
+0 .10938 m
+.00375 .10938 L
+s
+0 .13942 m
+.00375 .13942 L
+s
+0 .19952 m
+.00375 .19952 L
+s
+0 .22957 m
+.00375 .22957 L
+s
+0 .25962 m
+.00375 .25962 L
+s
+0 .28966 m
+.00375 .28966 L
+s
+0 .34976 m
+.00375 .34976 L
+s
+0 .37981 m
+.00375 .37981 L
+s
+0 .40986 m
+.00375 .40986 L
+s
+0 .4399 m
+.00375 .4399 L
+s
+0 .5 m
+.00375 .5 L
+s
+0 .53005 m
+.00375 .53005 L
+s
+0 .5601 m
+.00375 .5601 L
+s
+0 .59014 m
+.00375 .59014 L
+s
+0 .65024 m
+.00375 .65024 L
+s
+0 .68029 m
+.00375 .68029 L
+s
+0 .71034 m
+.00375 .71034 L
+s
+0 .74038 m
+.00375 .74038 L
+s
+0 .80048 m
+.00375 .80048 L
+s
+0 .83053 m
+.00375 .83053 L
+s
+0 .86058 m
+.00375 .86058 L
+s
+0 .89063 m
+.00375 .89063 L
+s
+0 .95072 m
+.00375 .95072 L
+s
+0 .98077 m
+.00375 .98077 L
+s
+.25 Mabswid
+0 0 m
+0 1 L
+s
+.01923 .99375 m
+.01923 1 L
+s
+.16947 .99375 m
+.16947 1 L
+s
+.31971 .99375 m
+.31971 1 L
+s
+.46995 .99375 m
+.46995 1 L
+s
+.62019 .99375 m
+.62019 1 L
+s
+.77043 .99375 m
+.77043 1 L
+s
+.92067 .99375 m
+.92067 1 L
+s
+.125 Mabswid
+.04928 .99625 m
+.04928 1 L
+s
+.07933 .99625 m
+.07933 1 L
+s
+.10938 .99625 m
+.10938 1 L
+s
+.13942 .99625 m
+.13942 1 L
+s
+.19952 .99625 m
+.19952 1 L
+s
+.22957 .99625 m
+.22957 1 L
+s
+.25962 .99625 m
+.25962 1 L
+s
+.28966 .99625 m
+.28966 1 L
+s
+.34976 .99625 m
+.34976 1 L
+s
+.37981 .99625 m
+.37981 1 L
+s
+.40986 .99625 m
+.40986 1 L
+s
+.4399 .99625 m
+.4399 1 L
+s
+.5 .99625 m
+.5 1 L
+s
+.53005 .99625 m
+.53005 1 L
+s
+.5601 .99625 m
+.5601 1 L
+s
+.59014 .99625 m
+.59014 1 L
+s
+.65024 .99625 m
+.65024 1 L
+s
+.68029 .99625 m
+.68029 1 L
+s
+.71034 .99625 m
+.71034 1 L
+s
+.74038 .99625 m
+.74038 1 L
+s
+.80048 .99625 m
+.80048 1 L
+s
+.83053 .99625 m
+.83053 1 L
+s
+.86058 .99625 m
+.86058 1 L
+s
+.89063 .99625 m
+.89063 1 L
+s
+.95072 .99625 m
+.95072 1 L
+s
+.98077 .99625 m
+.98077 1 L
+s
+.25 Mabswid
+0 1 m
+1 1 L
+s
+.99375 .01923 m
+1 .01923 L
+s
+.99375 .16947 m
+1 .16947 L
+s
+.99375 .31971 m
+1 .31971 L
+s
+.99375 .46995 m
+1 .46995 L
+s
+.99375 .62019 m
+1 .62019 L
+s
+.99375 .77043 m
+1 .77043 L
+s
+.99375 .92067 m
+1 .92067 L
+s
+.125 Mabswid
+.99625 .04928 m
+1 .04928 L
+s
+.99625 .07933 m
+1 .07933 L
+s
+.99625 .10938 m
+1 .10938 L
+s
+.99625 .13942 m
+1 .13942 L
+s
+.99625 .19952 m
+1 .19952 L
+s
+.99625 .22957 m
+1 .22957 L
+s
+.99625 .25962 m
+1 .25962 L
+s
+.99625 .28966 m
+1 .28966 L
+s
+.99625 .34976 m
+1 .34976 L
+s
+.99625 .37981 m
+1 .37981 L
+s
+.99625 .40986 m
+1 .40986 L
+s
+.99625 .4399 m
+1 .4399 L
+s
+.99625 .5 m
+1 .5 L
+s
+.99625 .53005 m
+1 .53005 L
+s
+.99625 .5601 m
+1 .5601 L
+s
+.99625 .59014 m
+1 .59014 L
+s
+.99625 .65024 m
+1 .65024 L
+s
+.99625 .68029 m
+1 .68029 L
+s
+.99625 .71034 m
+1 .71034 L
+s
+.99625 .74038 m
+1 .74038 L
+s
+.99625 .80048 m
+1 .80048 L
+s
+.99625 .83053 m
+1 .83053 L
+s
+.99625 .86058 m
+1 .86058 L
+s
+.99625 .89063 m
+1 .89063 L
+s
+.99625 .95072 m
+1 .95072 L
+s
+.99625 .98077 m
+1 .98077 L
+s
+.25 Mabswid
+1 0 m
+1 1 L
+s
+gsave
+.5 1.0125 -111 -4 Mabsadd m
+1 1 Mabs scale
+currentpoint translate
+0 20 translate 1 -1 scale
+/g { setgray} bind def
+/k { setcmykcolor} bind def
+/p { gsave} bind def
+/r { setrgbcolor} bind def
+/w { setlinewidth} bind def
+/C { curveto} bind def
+/F { fill} bind def
+/L { lineto} bind def
+/rL { rlineto} bind def
+/P { grestore} bind def
+/s { stroke} bind def
+/S { show} bind def
+/N {currentpoint 3 -1 roll show moveto} bind def
+/Msf { findfont exch scalefont [1 0 0 -1 0 0 ] makefont setfont} bind def
+/m { moveto} bind def
+/Mr { rmoveto} bind def
+/Mx {currentpoint exch pop moveto} bind def
+/My {currentpoint pop exch moveto} bind def
+/X {0 rmoveto} bind def
+/Y {0 exch rmoveto} bind def
+63.000 13.000 moveto
+%%IncludeResource: font Courier
+%%IncludeFont: Courier
+/Courier findfont 10.000 scalefont
+[1 0 0 -1 0 0 ] makefont setfont
+0.000 0.000 0.000 setrgbcolor
+0.000 0.000 rmoveto
+63.000 13.000 moveto
+%%IncludeResource: font Courier
+%%IncludeFont: Courier
+/Courier findfont 10.000 scalefont
+[1 0 0 -1 0 0 ] makefont setfont
+0.000 0.000 0.000 setrgbcolor
+(The) show
+87.000 13.000 moveto
+(number) show
+129.000 13.000 moveto
+(3000.) show
+159.000 13.000 moveto
+%%IncludeResource: font Courier
+%%IncludeFont: Courier
+/Courier findfont 10.000 scalefont
+[1 0 0 -1 0 0 ] makefont setfont
+0.000 0.000 0.000 setrgbcolor
+0.000 0.000 rmoveto
+1.000 setlinewidth
+grestore
+0 0 m
+1 0 L
+1 1 L
+0 1 L
+closepath
+clip
+newpath
+% Start of gray image
+p
+.01923 .01923 translate
+.96154 .96154 scale
+16 string
+16 16 8 [16 0 0 16 0 0] {
+\tcurrentfile
+\t1 index
+\treadhexstring
+\tpop
+}  Mimage
+0000000F5696BBD1FFFFE5B8660E0000
+000578E9FFFFFFFFFFFFFFFFFFCA1400
+0089FFFFD3A0665322222248D3FF8B00
+0060FFFFAD0500000000000076FFAC00
+00002AAB9C0B000000000000B5FF5E00
+000000000000000000000016F5F71A00
+00000000000000000000009DFF840000
+000000000003440100006AFFD5070000
+00000000009EFFFFA8A1FFDE1F000000
+00000000007EFFFFFFFFE12200000000
+00000000000054A5AFFFB50100000000
+000000000000000002C0FF3A00000000
+000000004F681000007EFF5F00000000
+00000000CEFFD84522D4FF5B00000000
+0000000050DEFFFFFFFFD20E00000000
+00000000000965E0BB9D180000000000
+pop
+P
+% End of image
+% End of Graphics
+MathPictureEnd
+\
+\>"], "Graphics",
+ ImageSize->{250, 250},
+ ImageMargins->{{0, 0}, {0, 0}},
+ ImageRegion->{{0, 1}, {0, 1}},
+ ImageCache->GraphicsData["CompressedBitmap", "\<\
+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
+\
+\>"],
+ ImageRangeCache->{{{0, 374}, {374, 0}} -> {-2.32356, -1.21428, 0.0748114, \
+0.0748114}}]
+}, Open  ]],
+
+Cell["Function to compute kernel a degree 3 polynomial", "Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"kerval", "[", 
+   RowBox[{"a_", ",", "b_"}], "]"}], " ", ":=", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"a", ".", "b"}], ")"}], "^", "3"}], " "}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"mysign", "[", "x_", "]"}], " ", ":=", " ", 
+  RowBox[{"If", "[", 
+   RowBox[{
+    RowBox[{"x", "<=", "0.0"}], ",", 
+    RowBox[{"-", "1.0"}], ",", "1.0"}], "]"}], " "}]], "Input"],
+
+Cell["Classifiers are arrays represented as arrays of coefficients", \
+"Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"clearGLBcls", "[", "data_", "]"}], "  ", ":=", " ", 
+   "\[IndentingNewLine]", 
+   RowBox[{"GLBcls", "=", 
+    RowBox[{"Table", "[", 
+     RowBox[{"0.0", ",", 
+      RowBox[{"{", "3", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"Length", "[", "data", "]"}], "}"}]}], "]"}]}]}], 
+  ";"}]], "Input"],
+
+Cell["\<\
+Computes the prediction of a classifier on a particular pattern\
+\>", "Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"classpredk", "[", 
+   RowBox[{"dat_", ",", "pat_", ",", "cl_"}], "]"}], "  ", ":=", " ", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"lcd", " ", "=", 
+       RowBox[{"Length", "[", "cl", "]"}]}], ",", "i"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Sum", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"cl", "\[LeftDoubleBracket]", "i", "\[RightDoubleBracket]"}], 
+       RowBox[{"kerval", "[", 
+        RowBox[{"pat", ",", 
+         RowBox[{"Take", "[", 
+          RowBox[{
+           RowBox[{
+           "dat", "\[LeftDoubleBracket]", "i", "\[RightDoubleBracket]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"2", ",", "257"}], "}"}]}], "]"}]}], "]"}]}], ",", " ", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "lcd"}], "}"}]}], "]"}]}], "]"}]}]], "Input"],
+
+Cell["Trains all 3 classifiers for 1 epoch", "Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"traingen", "[", "dat_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"i", ",", "val", ",", "y", ",", "preds", ",", 
+        RowBox[{"mistakes", "=", "0"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", "1"}], ",", 
+         RowBox[{"i", "\[LessEqual]", 
+          RowBox[{"Length", "[", "dat", "]"}]}], ",", 
+         RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"val", " ", "=", " ", 
+           RowBox[{
+            RowBox[{"dat", "[", 
+             RowBox[{"[", "i", "]"}], "]"}], "[", 
+            RowBox[{"[", "1", "]"}], "]"}]}], " ", ";", "\[IndentingNewLine]",
+           "\[IndentingNewLine]", 
+          RowBox[{"(*", " ", 
+           RowBox[{
+           "get", " ", "predictions", " ", "of", " ", "the", " ", "3", " ", 
+            "classifiers"}], " ", "*)"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"preds", " ", "=", " ", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"classpredk", "[", 
+              RowBox[{"dat", ",", 
+               RowBox[{"Take", "[", 
+                RowBox[{
+                 RowBox[{
+                 "dat", "\[LeftDoubleBracket]", "i", 
+                  "\[RightDoubleBracket]"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"2", ",", "257"}], "}"}]}], "]"}], ",", 
+               RowBox[{
+               "GLBcls", "\[LeftDoubleBracket]", "j", 
+                "\[RightDoubleBracket]"}]}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"j", ",", "1", ",", "3"}], "}"}]}], "]"}]}], "  ", ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"maxc", "=", " ", 
+           RowBox[{"-", " ", "10000000000000000.0"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"For", "[", 
+           RowBox[{
+            RowBox[{"j", "=", "1"}], ",", 
+            RowBox[{"j", "\[LessEqual]", "3"}], ",", 
+            RowBox[{"j", "++"}], ",", "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{"y", " ", "=", " ", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{"val", "\[Equal]", "j"}], ",", "1.0", ",", 
+                RowBox[{"-", "1.0"}]}], " ", "]"}]}], ";", 
+             "\[IndentingNewLine]", "\[IndentingNewLine]", 
+             RowBox[{"(*", " ", "update", " ", "*)"}], "\[IndentingNewLine]", 
+             
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"y", " ", 
+                 RowBox[{
+                 "preds", "\[LeftDoubleBracket]", "j", 
+                  "\[RightDoubleBracket]"}]}], "\[LessEqual]", " ", "0"}], 
+               ",", "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"GLBcls", "\[LeftDoubleBracket]", 
+                 RowBox[{"j", ",", "i"}], "\[RightDoubleBracket]"}], "=", " ", 
+                RowBox[{
+                 RowBox[{"GLBcls", "\[LeftDoubleBracket]", 
+                  RowBox[{"j", ",", "i"}], "\[RightDoubleBracket]"}], " ", 
+                 "-", 
+                 RowBox[{"mysign", "[", 
+                  RowBox[{
+                  "preds", "\[LeftDoubleBracket]", "j", 
+                   "\[RightDoubleBracket]"}], "]"}]}]}]}], "]"}], " ", ";", 
+             "\[IndentingNewLine]", 
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                "preds", "\[LeftDoubleBracket]", "j", 
+                 "\[RightDoubleBracket]"}], ">", "maxc"}], ",", 
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{"maxc", "=", 
+                  RowBox[{
+                  "preds", "\[LeftDoubleBracket]", "j", 
+                   "\[RightDoubleBracket]"}]}], ";", 
+                 RowBox[{"maxi", "=", "j"}]}], ")"}]}], "]"}], ";"}]}], 
+           "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"maxi", " ", "\[NotEqual]", " ", "val"}], ",", 
+            RowBox[{"mistakes", "++"}]}], "]"}], " ", ";"}]}], 
+        "\[IndentingNewLine]", "]"}], ";", "mistakes"}]}], "]"}]}], " ", 
+   ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.530285105910029*^9, 3.530285110750865*^9}}],
+
+Cell["(* Test classifiers on \"unseen data *)", "Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"testclassifiers", "[", 
+     RowBox[{"dat_", ",", "testdat_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"i", ",", "val", ",", "y", ",", "preds", ",", 
+        RowBox[{"mistakes", "=", "0"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", "1"}], ",", 
+         RowBox[{"i", "\[LessEqual]", 
+          RowBox[{"Length", "[", "testdat", "]"}]}], ",", 
+         RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"val", " ", "=", " ", 
+           RowBox[{
+            RowBox[{"testdat", "[", 
+             RowBox[{"[", "i", "]"}], "]"}], "[", 
+            RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"preds", " ", "=", " ", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"classpredk", "[", 
+              RowBox[{"dat", ",", 
+               RowBox[{"Take", "[", 
+                RowBox[{
+                 RowBox[{
+                 "testdat", "\[LeftDoubleBracket]", "i", 
+                  "\[RightDoubleBracket]"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"2", ",", "257"}], "}"}]}], "]"}], ",", 
+               RowBox[{
+               "GLBcls", "\[LeftDoubleBracket]", "j", 
+                "\[RightDoubleBracket]"}]}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"j", ",", "1", ",", "3"}], "}"}]}], "]"}]}], "  ", ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"maxc", "=", " ", 
+           RowBox[{"-", " ", "1000000000.0"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"For", "[", 
+           RowBox[{
+            RowBox[{"j", "=", "1"}], ",", 
+            RowBox[{"j", "\[LessEqual]", "3"}], ",", 
+            RowBox[{"j", "++"}], ",", "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{"y", " ", "=", " ", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{"val", "\[Equal]", "j"}], ",", "1.0", ",", 
+                RowBox[{"-", "1.0"}]}], " ", "]"}]}], ";", 
+             "\[IndentingNewLine]", 
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                "preds", "\[LeftDoubleBracket]", "j", 
+                 "\[RightDoubleBracket]"}], ">", "maxc"}], ",", 
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{"maxc", "=", 
+                  RowBox[{
+                  "preds", "\[LeftDoubleBracket]", "j", 
+                   "\[RightDoubleBracket]"}]}], ";", 
+                 RowBox[{"maxi", "=", "j"}]}], ")"}]}], "]"}], ";"}]}], 
+           "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"maxi", " ", "\[NotEqual]", " ", "val"}], ",", 
+            RowBox[{"mistakes", "++"}]}], "]"}], " ", ";"}]}], 
+        "\[IndentingNewLine]", "]"}], ";", " ", 
+       RowBox[{"N", "[", 
+        RowBox[{"mistakes", "/", 
+         RowBox[{"Length", "[", "testdat", "]"}]}], "]"}]}]}], "]"}]}], " ", 
+   ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]"}]], "Input"],
+
+Cell["Following code tests and trains for 3 generations", "Commentary"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"demo", "[", 
+    RowBox[{"train_", ",", "test_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"i", ",", "rtn"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"clearGLBcls", "[", "train", "]"}], ";", "\[IndentingNewLine]", 
+      
+      RowBox[{"Do", "[", " ", 
+       RowBox[{"(*", " ", 
+        RowBox[{"3", " ", "iterations", " ", "chosen", " ", "arbitrarily"}], 
+        " ", "*)"}], "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"rtn", " ", "=", " ", 
+          RowBox[{
+           RowBox[{"traingen", "[", "train", "]"}], " ", "//", "Timing"}]}], 
+         " ", ";", "\[IndentingNewLine]", 
+         RowBox[{"Print", "[", 
+          RowBox[{
+          "\"\<Training - epoch \>\"", ",", "i", ",", "\"\< required \>\"", 
+           ",", 
+           RowBox[{"rtn", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], ",", "\[IndentingNewLine]", " ", 
+           "\"\< with \>\"", ",", 
+           RowBox[{"rtn", "[", 
+            RowBox[{"[", "2", "]"}], "]"}], ",", "\"\< mistakes out of \>\"", 
+           ",", 
+           RowBox[{"Length", "[", "train", "]"}], ",", "\"\< items.\>\""}], 
+          "]"}], " ", ";", "\[IndentingNewLine]", 
+         RowBox[{"rtn", " ", "=", " ", 
+          RowBox[{
+           RowBox[{"testclassifiers", "[", 
+            RowBox[{"train", ",", "test"}], "]"}], " ", "//", "Timing"}]}], 
+         " ", ";", "\[IndentingNewLine]", 
+         RowBox[{"Print", "[", 
+          RowBox[{
+          "\"\<Testing - epoch \>\"", ",", "i", ",", "\"\< required \>\"", 
+           ",", 
+           RowBox[{"rtn", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], ",", "\[IndentingNewLine]", 
+           "\"\< with a test error of \>\"", ",", 
+           RowBox[{"NumberForm", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"rtn", "[", 
+               RowBox[{"[", "2", "]"}], "]"}], "*", "100"}], ",", "3"}], 
+            "]"}], ",", "\"\<%.\>\""}], "]"}], " ", ";"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", "3"}], "}"}]}], "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"demo", "[", 
+   RowBox[{"dtrain123", ",", "dtest123"}], "]"}], ";"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Training - epoch \"\>", "\[InvisibleSpace]", "1", 
+   "\[InvisibleSpace]", "\<\" required \"\>", "\[InvisibleSpace]", 
+   RowBox[{"21.640000000000004`", " ", "Second"}], 
+   "\[InvisibleSpace]", "\<\" with \"\>", "\[InvisibleSpace]", "15", 
+   "\[InvisibleSpace]", "\<\" mistakes out of \"\>", "\[InvisibleSpace]", 
+   "329", "\[InvisibleSpace]", "\<\" items.\"\>"}],
+  SequenceForm[
+  "Training - epoch ", 1, " required ", 21.640000000000004` Second, " with ", 
+   15, " mistakes out of ", 329, " items."],
+  Editable->False]], "Print"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Testing - epoch \"\>", "\[InvisibleSpace]", "1", 
+   "\[InvisibleSpace]", "\<\" required \"\>", "\[InvisibleSpace]", 
+   RowBox[{"30.29`", " ", "Second"}], 
+   "\[InvisibleSpace]", "\<\" with a test error of \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"3.51\"\>",
+     3.508771929824561,
+     AutoDelete->True],
+    NumberForm[#, 3]& ], "\[InvisibleSpace]", "\<\"%.\"\>"}],
+  SequenceForm[
+  "Testing - epoch ", 1, " required ", 30.29 Second, " with a test error of ", 
+   NumberForm[3.508771929824561, 3], "%."],
+  Editable->False]], "Print"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Training - epoch \"\>", "\[InvisibleSpace]", "2", 
+   "\[InvisibleSpace]", "\<\" required \"\>", "\[InvisibleSpace]", 
+   RowBox[{"21.529999999999994`", " ", "Second"}], 
+   "\[InvisibleSpace]", "\<\" with \"\>", "\[InvisibleSpace]", "3", 
+   "\[InvisibleSpace]", "\<\" mistakes out of \"\>", "\[InvisibleSpace]", 
+   "329", "\[InvisibleSpace]", "\<\" items.\"\>"}],
+  SequenceForm[
+  "Training - epoch ", 2, " required ", 21.529999999999994` Second, " with ", 
+   3, " mistakes out of ", 329, " items."],
+  Editable->False]], "Print"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Testing - epoch \"\>", "\[InvisibleSpace]", "2", 
+   "\[InvisibleSpace]", "\<\" required \"\>", "\[InvisibleSpace]", 
+   RowBox[{"29.950000000000003`", " ", "Second"}], 
+   "\[InvisibleSpace]", "\<\" with a test error of \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2.85\"\>",
+     2.850877192982456,
+     AutoDelete->True],
+    NumberForm[#, 3]& ], "\[InvisibleSpace]", "\<\"%.\"\>"}],
+  SequenceForm[
+  "Testing - epoch ", 2, " required ", 29.950000000000003` Second, 
+   " with a test error of ", 
+   NumberForm[2.850877192982456, 3], "%."],
+  Editable->False]], "Print"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Training - epoch \"\>", "\[InvisibleSpace]", "3", 
+   "\[InvisibleSpace]", "\<\" required \"\>", "\[InvisibleSpace]", 
+   RowBox[{"21.72999999999999`", " ", "Second"}], 
+   "\[InvisibleSpace]", "\<\" with \"\>", "\[InvisibleSpace]", "0", 
+   "\[InvisibleSpace]", "\<\" mistakes out of \"\>", "\[InvisibleSpace]", 
+   "329", "\[InvisibleSpace]", "\<\" items.\"\>"}],
+  SequenceForm[
+  "Training - epoch ", 3, " required ", 21.72999999999999 Second, " with ", 0,
+    " mistakes out of ", 329, " items."],
+  Editable->False]], "Print"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Testing - epoch \"\>", "\[InvisibleSpace]", "3", 
+   "\[InvisibleSpace]", "\<\" required \"\>", "\[InvisibleSpace]", 
+   RowBox[{"29.99000000000001`", " ", "Second"}], 
+   "\[InvisibleSpace]", "\<\" with a test error of \"\>", "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2.63\"\>",
+     2.631578947368421,
+     AutoDelete->True],
+    NumberForm[#, 3]& ], "\[InvisibleSpace]", "\<\"%.\"\>"}],
+  SequenceForm[
+  "Testing - epoch ", 3, " required ", 29.99000000000001 Second, 
+   " with a test error of ", 
+   NumberForm[2.631578947368421, 3], "%."],
+  Editable->False]], "Print"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1065, 740},
+WindowMargins->{{154, Automatic}, {Automatic, 7}},
+DockedCells->FEPrivate`FrontEndResource[
+ "FEExpressions", "CompatibilityToolbar"],
+PrintingPageRange->{Automatic, Automatic},
+PrintingOptions->{"Magnification"->1,
+"PaperOrientation"->"Portrait",
+"PaperSize"->{612, 792},
+"PostScriptOutputFile":>FrontEnd`FileName[{$RootDirectory, "tmp"}, "out.ps", 
+  CharacterEncoding -> "MacintoshRoman"]},
+Magnification->1.5,
+FrontEndVersion->"7.0 for Mac OS X PowerPC (32-bit) (February 18, 2009)",
+StyleDefinitions->"Demo.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[545, 20, 87, 2, 129, "Title"],
+Cell[635, 24, 68, 0, 78, "Subsubtitle"],
+Cell[706, 26, 77, 0, 30, "Commentary"],
+Cell[786, 28, 155, 5, 42, "Input"],
+Cell[944, 35, 76, 0, 30, "Commentary"],
+Cell[1023, 37, 323, 9, 66, "Input"],
+Cell[1349, 48, 33, 0, 30, "Commentary"],
+Cell[1385, 50, 174, 5, 42, "Input"],
+Cell[1562, 57, 143, 3, 30, "Commentary"],
+Cell[CellGroupData[{
+Cell[1730, 64, 71, 1, 42, "Input"],
+Cell[1804, 67, 107, 4, 64, "Output"]
+}, Open  ]],
+Cell[1926, 74, 172, 5, 42, "Input"],
+Cell[2101, 81, 1345, 36, 159, "Input"],
+Cell[3449, 119, 78, 0, 30, "Commentary"],
+Cell[CellGroupData[{
+Cell[3552, 123, 121, 3, 42, "Input"],
+Cell[3676, 128, 11647, 651, 399, 7871, 585, "GraphicsData", "PostScript", \
+"Graphics"]
+}, Open  ]],
+Cell[15338, 782, 70, 0, 30, "Commentary"],
+Cell[15411, 784, 212, 7, 44, "Input"],
+Cell[15626, 793, 214, 6, 44, "Input"],
+Cell[15843, 801, 84, 1, 30, "Commentary"],
+Cell[15930, 804, 348, 11, 67, "Input"],
+Cell[16281, 817, 93, 2, 30, "Commentary"],
+Cell[16377, 821, 859, 24, 67, "Input"],
+Cell[17239, 847, 58, 0, 30, "Commentary"],
+Cell[17300, 849, 4462, 103, 504, "Input"],
+Cell[21765, 954, 61, 0, 30, "Commentary"],
+Cell[21829, 956, 3241, 78, 343, "Input"],
+Cell[25073, 1036, 71, 0, 30, "Commentary"],
+Cell[25147, 1038, 2191, 54, 251, "Input"],
+Cell[CellGroupData[{
+Cell[27363, 1096, 114, 3, 67, "Input"],
+Cell[CellGroupData[{
+Cell[27502, 1103, 586, 11, 51, "Print"],
+Cell[28091, 1116, 614, 14, 51, "Print"],
+Cell[28708, 1132, 584, 11, 51, "Print"],
+Cell[29295, 1145, 645, 15, 51, "Print"],
+Cell[29943, 1162, 581, 11, 51, "Print"],
+Cell[30527, 1175, 642, 15, 51, "Print"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
