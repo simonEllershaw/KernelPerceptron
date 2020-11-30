@@ -3,18 +3,16 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 class MnistDigits:
+    image_size = 16
+
     def __init__(self, fname):
         self.data = np.genfromtxt(fname)
-        self.image_size = 16
     
     def get_image(self, index):
         return self.data[index, 1:]
     
     def get_label(self, index):
         return -1 if self.data[index, 0] == 1 else 1
-
-    def get_image_size(self):
-        return self.image_size
     
     def __len__(self):
         return self.data.shape[0]
