@@ -11,12 +11,18 @@ class MnistDigits:
         return self.data[index, 1:]
     
     def get_label(self, index):
-        return self.data[index, 0]
+        return -1 if self.data[index, 0] == 1 else 1
+
+    def get_image_size(self):
+        return self.image_size
+    
+    def __len__(self):
+        return self.data.shape[0]
     
     def visualise_sample(self, index):
         label = self.get_label(index)
         image = self.get_image(index).reshape(self.image_size, self.image_size)
-        
+
         plt.imshow(image)
         plt.title(f"Index: {index}, Label: {label}")
         plt.show()
