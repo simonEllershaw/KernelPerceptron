@@ -7,7 +7,7 @@ class KernelPerceptron():
     def __init__(self, kernel, savedWeightsFname=None):
         self.kernel = kernel
         self.alpha =  []
-        self.training_images = []
+        self.support_vectors = []
 
     def calc_kernel_matrix(self, data_1, data_2):
         kernel_matrix = np.zeros((len(data_1), len(data_2)))
@@ -18,9 +18,9 @@ class KernelPerceptron():
 
     def train(self, data):
         num_epochs = 10
-        n_samples, _ = data.shape
+        
+        n_samples, _ = data.images.shape
         self.alpha = np.zeros(n_samples)
-        self.training_images = data.images
         kernel_matrix = self.calc_kernel_matrix(data.images, data.images)
 
         for epoch in range(num_epochs):
@@ -38,24 +38,23 @@ class KernelPerceptron():
                     self.alpha[t] += y
                     m +=1
             print(t, m, float(m)*100/t)
+        self.set_support_vectors(data.images)
         # self.saveModel()
+
+    def set_support_vectors(self, training_images):
+        support_vector_indicies = np.nonzero(self.alpha)
+        self.alpha = self.alpha[support_vector_indicies]
+        self.support_vectors = training_images[support_vector_indicies]
 
     def predict(self, kernel_matrix, t):
         return -1 if np.sum(self.alpha*kernel_matrix[:, t]) < 0 else 1
 
     def infer(self, test_images):
-        kernel_matrix = self.calc_kernel_matrix(self.training_images, test_images)
+        kernel_matrix = self.calc_kernel_matrix(self.support_vectors, test_images)
         predictions = np.zeros(len(test_images))
         for t in range(len(test_images)):
             predictions[t] = self.predict(kernel_matrix, t)
         return predictions
-
-    def loadModel(self, savedModelFname):
-        with open(savedModelFname, 'rb') as pickleFile:      
-            saved_object = pickle.load(pickleFile)
-            print(saved_object.alpha)
-            self.alpha = saved_object.alpha
-            # print(pickle.load(pickleFile).alpha)
 
     def saveModel(self):
         timestampStr = datetime.now().strftime("%d_%b_%H_%M_%S")
@@ -71,8 +70,9 @@ def dot_product(x_i, x_j):
     return x_i.T@x_j
 
 if __name__ == "__main__":
-    # data = MnistDigits(r"Data\dtrain123.dat")
-    # model.train(data)
+    data = MnistDigits(r"Data\dtrain123.dat")
+    model = KernelPerceptron(dot_product)
+    model.train(data)
     # model.saveModel()
     # print(model.infer(data.images))
 
