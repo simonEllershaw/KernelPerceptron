@@ -1,14 +1,17 @@
 from mnistDigitLoader import MnistDigits
+import kernelFunctions
 import numpy as np
 from datetime import datetime
 import pickle
+import time
 
 class KernelPerceptron():
-    def __init__(self, kernel, hyperparameters=None):
+    def __init__(self, class_label, kernel, hyperparameters=None):
         self.kernel = kernel
+        self.class_label = class_label
+        self.hyperparameters = hyperparameters
         self.alpha =  []
         self.support_vectors = []
-        self.hyperparameters = hyperparameters
 
     def calc_kernel_matrix(self, data_1, data_2):
         kernel_matrix = np.zeros((len(data_1), len(data_2)))
@@ -17,24 +20,23 @@ class KernelPerceptron():
                 kernel_matrix[i,j] = self.kernel(data_1[i], data_2[j], self.hyperparameters)
         return kernel_matrix
 
-    def train(self, data):
+    def train(self, data, kernel_matrix=None):
         num_epochs = 10
         
         # Set up training variables
         n_samples, _ = data.images.shape
         alpha_training = np.zeros(n_samples)
-        kernel_matrix = self.calc_kernel_matrix(data.images, data.images)
+        if kernel_matrix is None:
+            kernel_matrix = self.calc_kernel_matrix(data.images, data.images)
 
         for epoch in range(num_epochs):
             m = 0
             for t in range(n_samples):
                 # Get sample
                 x_t = data.images[t]
-                y = data.labels[t]
-
+                y = 1 if data.labels[t] == self.class_label else -1
                 # Make prediction
-                y_hat = self.predict(alpha_training, kernel_matrix, t)
-
+                y_hat = 1 if self.distance_to_hyperplane(alpha_training, kernel_matrix, t) > 0 else -1 
                 #Update weights
                 if y_hat != y:
                     alpha_training[t] += y
@@ -50,17 +52,20 @@ class KernelPerceptron():
         self.support_vectors = training_images[support_vector_indicies]
 
     @staticmethod
-    def predict(alpha, kernel_matrix, t):
+    def distance_to_hyperplane(alpha, kernel_matrix, t):
         # Base kernel perceptron algorithm
-        return -1 if np.sum(alpha*kernel_matrix[:, t]) < 0 else 1
+        return np.sum(alpha*kernel_matrix[:, t])
 
-    def infer(self, test_images):
-        predictions = np.zeros(len(test_images))
+    def calc_certainites(self, test_images):
+        certainties = np.zeros(len(test_images))
         # Calc kernel image based off support vectors and predict using alphas
         kernel_matrix = self.calc_kernel_matrix(self.support_vectors, test_images)
         for t in range(len(test_images)):
-            predictions[t] = KernelPerceptron.predict(self.alpha, kernel_matrix, t)
-        return predictions
+            certainties[t] = KernelPerceptron.distance_to_hyperplane(self.alpha, kernel_matrix, t)
+        return certainties
+
+    def predict(self, test_images):
+        return np.where(self.calc_certainites(test_images) > 0, self.class_label, -1)
 
     def saveModel(self):
         timestampStr = datetime.now().strftime("%d_%b_%H_%M_%S")
@@ -72,21 +77,15 @@ class KernelPerceptron():
         with open(savedModelFname, 'rb') as pickleFile:      
             return pickle.load(pickleFile)
 
-def dot_product(x_i, x_j, hyperparameters):
-    # Hyperparameter needed to comply with kernel interface
-    return x_i.T@x_j
-
-def polynomial_kernel(x_i, x_j, power):
-    return (x_i.T@x_j) ** power
-
-def gaussian_kernel(x_i, x_j, c):
-    return np.e**(-c * np.linalg.norm(x_i.T-x_j) ** 2)
-
 if __name__ == "__main__":
+    t1 = time.time()
     data = MnistDigits(r"Data\dtrain123.dat")
-    model = KernelPerceptron(gaussian_kernel, 3)
+    model = KernelPerceptron(2, kernelFunctions.polynomial_kernel, 3)
     model.train(data)
+    print(model.predict(data.images))
+    print(data.labels)
+    print(time.time() - t1)
     # model.saveModel()
-    print(model.infer(data.images))
+    # print(model.infer(data.images))
 
     

@@ -8,7 +8,7 @@ class MnistDigits:
     def __init__(self, fname):
         data = np.genfromtxt(fname)
         self.images = data[:, 1:]
-        self.labels = np.where(data[:, 0] == 1, 1, -1)
+        self.labels = data[:, 0]
         self.labels
         self.length = data.shape[0]
     
