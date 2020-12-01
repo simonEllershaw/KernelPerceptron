@@ -19,8 +19,9 @@ class KernelPerceptron():
     def train(self, data):
         num_epochs = 10
         
+        # Set up training variables
         n_samples, _ = data.images.shape
-        self.alpha = np.zeros(n_samples)
+        alpha_training = np.zeros(n_samples)
         kernel_matrix = self.calc_kernel_matrix(data.images, data.images)
 
         for epoch in range(num_epochs):
@@ -31,29 +32,34 @@ class KernelPerceptron():
                 y = data.labels[t]
 
                 # Make prediction
-                y_hat = self.predict(kernel_matrix, t)
+                y_hat = self.predict(alpha_training, kernel_matrix, t)
 
                 #Update weights
                 if y_hat != y:
-                    self.alpha[t] += y
+                    alpha_training[t] += y
                     m +=1
             print(t, m, float(m)*100/t)
-        self.set_support_vectors(data.images)
-        # self.saveModel()
 
-    def set_support_vectors(self, training_images):
-        support_vector_indicies = np.nonzero(self.alpha)
-        self.alpha = self.alpha[support_vector_indicies]
+        self.set_support_vectors(alpha_training, data.images)
+        self.saveModel()
+
+    def set_support_vectors(self, alpha_training, training_images):
+        # Non zero alphas and corresponding training image stored in object
+        support_vector_indicies = np.nonzero(alpha_training)
+        self.alpha = alpha_training[support_vector_indicies]
         self.support_vectors = training_images[support_vector_indicies]
 
-    def predict(self, kernel_matrix, t):
-        return -1 if np.sum(self.alpha*kernel_matrix[:, t]) < 0 else 1
+    @staticmethod
+    def predict(alpha, kernel_matrix, t):
+        # Base kernel perceptron algorithm
+        return -1 if np.sum(alpha*kernel_matrix[:, t]) < 0 else 1
 
     def infer(self, test_images):
-        kernel_matrix = self.calc_kernel_matrix(self.support_vectors, test_images)
         predictions = np.zeros(len(test_images))
+        # Calc kernel image based off support vectors and predict using alphas
+        kernel_matrix = self.calc_kernel_matrix(self.support_vectors, test_images)
         for t in range(len(test_images)):
-            predictions[t] = self.predict(kernel_matrix, t)
+            predictions[t] = KernelPerceptron.predict(self.alpha, kernel_matrix, t)
         return predictions
 
     def saveModel(self):
@@ -74,7 +80,7 @@ if __name__ == "__main__":
     model = KernelPerceptron(dot_product)
     model.train(data)
     # model.saveModel()
-    # print(model.infer(data.images))
+    print(model.infer(data.images))
 
     # model2 = KernelPerceptron(r"savedModels\kernelPerceptron_30_Nov_17_07_41.npy")
     # print(model2.inference(data.get_image(0)))
