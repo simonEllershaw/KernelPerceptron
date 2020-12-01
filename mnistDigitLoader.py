@@ -6,20 +6,18 @@ class MnistDigits:
     image_size = 16
 
     def __init__(self, fname):
-        self.data = np.genfromtxt(fname)
-    
-    def get_image(self, index):
-        return self.data[index, 1:]
-    
-    def get_label(self, index):
-        return -1 if self.data[index, 0] == 1 else 1
+        data = np.genfromtxt(fname)
+        self.images = data[:, 1:]
+        self.labels = np.where(data[:, 0] == 1, 1, -1)
+        self.labels
+        self.length = data.shape[0]
     
     def __len__(self):
-        return self.data.shape[0]
+        return self.length
     
     def visualise_sample(self, index):
-        label = self.get_label(index)
-        image = self.get_image(index).reshape(self.image_size, self.image_size)
+        label = self.labels[index]
+        image = self.images[index].reshape(self.image_size, self.image_size)
 
         plt.imshow(image)
         plt.title(f"Index: {index}, Label: {label}")
@@ -28,4 +26,4 @@ class MnistDigits:
 
 if __name__ == "__main__":
     data = MnistDigits(r"Data\dtest123.dat")
-    data.visualise_sample(454)
+    data.visualise_sample(4)
