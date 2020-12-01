@@ -4,16 +4,17 @@ from datetime import datetime
 import pickle
 
 class KernelPerceptron():
-    def __init__(self, kernel, savedWeightsFname=None):
+    def __init__(self, kernel, hyperparameters=None):
         self.kernel = kernel
         self.alpha =  []
         self.support_vectors = []
+        self.hyperparameters = hyperparameters
 
     def calc_kernel_matrix(self, data_1, data_2):
         kernel_matrix = np.zeros((len(data_1), len(data_2)))
         for i in range(len(data_1)):
             for j in range(len(data_2)):
-                kernel_matrix[i,j] = self.kernel(data_1[i], data_2[j])
+                kernel_matrix[i,j] = self.kernel(data_1[i], data_2[j], self.hyperparameters)
         return kernel_matrix
 
     def train(self, data):
@@ -41,7 +42,6 @@ class KernelPerceptron():
             print(t, m, float(m)*100/t)
 
         self.set_support_vectors(alpha_training, data.images)
-        self.saveModel()
 
     def set_support_vectors(self, alpha_training, training_images):
         # Non zero alphas and corresponding training image stored in object
@@ -72,17 +72,21 @@ class KernelPerceptron():
         with open(savedModelFname, 'rb') as pickleFile:      
             return pickle.load(pickleFile)
 
-def dot_product(x_i, x_j):
+def dot_product(x_i, x_j, hyperparameters):
+    # Hyperparameter needed to comply with kernel interface
     return x_i.T@x_j
+
+def polynomial_kernel(x_i, x_j, power):
+    return (x_i.T@x_j) ** power
+
+def gaussian_kernel(x_i, x_j, c):
+    return np.e**(-c * np.linalg.norm(x_i.T-x_j) ** 2)
 
 if __name__ == "__main__":
     data = MnistDigits(r"Data\dtrain123.dat")
-    model = KernelPerceptron(dot_product)
+    model = KernelPerceptron(gaussian_kernel, 3)
     model.train(data)
     # model.saveModel()
     print(model.infer(data.images))
-
-    # model2 = KernelPerceptron(r"savedModels\kernelPerceptron_30_Nov_17_07_41.npy")
-    # print(model2.inference(data.get_image(0)))
 
     
