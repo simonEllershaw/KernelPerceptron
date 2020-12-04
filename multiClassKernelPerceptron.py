@@ -1,6 +1,7 @@
 from kernelPerceptron import KernelPerceptron
 from mnistDigitLoader import MnistDigits
 import kernelFunctions
+from sklearn.metrics import classification_report, confusion_matrix
 
 import time
 import numpy as np
@@ -43,10 +44,11 @@ class MultiClassKernelPerceptron():
             return pickle.load(pickleFile)
 
 if __name__ == "__main__":
-    t1 = time.time()
     data = MnistDigits(r"Data\dtrain123.dat").get_split_datasets()
+
     model = MultiClassKernelPerceptron(np.arange(0,10), kernelFunctions.polynomial_kernel, 3)
     model.train(data["images_train"], data["labels_train"], data["images_val"], data["labels_val"])
-    predict = model.predict(data["images_test"])
-    print(np.count_nonzero(data["labels_test"]==predict) / float(len(data["images_test"])))
-    print(time.time() - t1)
+    y_pred = model.predict(data["images_test"])
+
+    print(confusion_matrix(data["labels_test"], y_pred))
+    print(classification_report(data["labels_test"], y_pred))

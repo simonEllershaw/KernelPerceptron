@@ -93,7 +93,7 @@ class KernelPerceptron():
 
 if __name__ == "__main__":
     t1 = time.time()
-    data = MnistDigits(r"Data\dtrain123.dat").get_split_datasets(fraction_test=0.2, fraction_val=0.2)
+    data = MnistDigits(r"Data\dtrain123.dat").get_split_datasets()
     model = KernelPerceptron(3, kernelFunctions.polynomial_kernel, 3)
     model.train(data["images_train"], data["labels_train"], data["images_val"], data["labels_val"])
     predict = model.predict(data["images_test"])
@@ -101,6 +101,5 @@ if __name__ == "__main__":
     print("Test Acc:", np.count_nonzero(test_gt==predict) / float(len(test_gt)))
     print("Time taken:", time.time() - t1)
     # model.saveModel()
-    # print(model.infer(data.images))
 
     
