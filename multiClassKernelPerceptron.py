@@ -12,10 +12,11 @@ class MultiClassKernelPerceptron():
         self.perceptrons = []
         self.kernel = kernel
         self.hyperparameters = hyperparameters
-        for label in class_labels:
-            self.perceptrons.append(KernelPerceptron(label, kernel, hyperparameters))
 
     def train(self, x_train, y_train, x_val, y_val):
+        for label in np.unique(y_train):
+            self.perceptrons.append(KernelPerceptron(label, self.kernel, self.hyperparameters))
+
         kernel_matrix_train = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train)
         kernel_matrix_val = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train, x_val)
         for model in self.perceptrons:
@@ -43,7 +44,7 @@ class MultiClassKernelPerceptron():
 
 if __name__ == "__main__":
     t1 = time.time()
-    data = MnistDigits(r"Data\zipCombo.dat").get_split_datasets(fraction_test=0.2, fraction_val=0.2)
+    data = MnistDigits(r"Data\dtrain123.dat").get_split_datasets()
     model = MultiClassKernelPerceptron(np.arange(0,10), kernelFunctions.polynomial_kernel, 3)
     model.train(data["images_train"], data["labels_train"], data["images_val"], data["labels_val"])
     predict = model.predict(data["images_test"])
