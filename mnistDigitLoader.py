@@ -19,7 +19,7 @@ class MnistDigits:
         np.random.shuffle(self.data)
         images = self.data[:, self.label_column+1:]
         labels = self.data[:, self.label_column]
-
+        print(labels.shape)
         return {
             "images_test": images[:divider_test],
             "images_val": images[divider_test:divider_val],
@@ -41,4 +41,6 @@ class MnistDigits:
 
 if __name__ == "__main__":
     datasets = MnistDigits(r"Data\dtest123.dat").get_split_datasets()
+    for key, data in datasets.items():
+        print(key, data.shape)
     MnistDigits.visualise_sample(datasets["images_train"][0], datasets["labels_train"][0])

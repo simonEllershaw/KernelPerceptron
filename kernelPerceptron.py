@@ -10,62 +10,76 @@ class KernelPerceptron():
         self.kernel = kernel
         self.class_label = class_label
         self.hyperparameters = hyperparameters
-        self.alpha =  []
-        self.support_vectors = []
 
-    def calc_kernel_matrix(self, data_1, data_2):
-        kernel_matrix = np.zeros((len(data_1), len(data_2)))
-        for i in range(len(data_1)):
-            for j in range(len(data_2)):
-                kernel_matrix[i,j] = self.kernel(data_1[i], data_2[j], self.hyperparameters)
-        return kernel_matrix
-
-    def train(self, data, kernel_matrix=None):
-        num_epochs = 10
-        
+    def train(self, x_train, y_train, x_val, y_val, kernel_matrix_train=None, kernel_matrix_val=None):     
+        print(f"Training Class {self.class_label}")   
         # Set up training variables
-        n_samples, _ = data.images.shape
+        n_samples, _ = x_train.shape
         alpha_training = np.zeros(n_samples)
-        if kernel_matrix is None:
-            kernel_matrix = self.calc_kernel_matrix(data.images, data.images)
+        y_train = self.classify_labels(y_train)
+        y_val = self.classify_labels(y_val)
+        
+        if kernel_matrix_train is None:
+            kernel_matrix_train = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train, x_train)
+        if kernel_matrix_val is None:
+            kernel_matrix_val = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train, x_val)
+        
+        epochs_since_val_acc_improvement = 0
+        best_val_accuracy = -1
+        epoch = 0
 
-        for epoch in range(num_epochs):
+        print("Epoch|Train Acc|Val Acc|Best Val Acc|")
+        while(epochs_since_val_acc_improvement < 2):
             m = 0
+            epoch += 1
             for t in range(n_samples):
-                # Get sample
-                x_t = data.images[t]
-                y = 1 if data.labels[t] == self.class_label else -1
                 # Make prediction
-                y_hat = 1 if self.distance_to_hyperplane(alpha_training, kernel_matrix, t) > 0 else -1 
+                y_hat = 1 if self.distance_to_hyperplane(alpha_training, kernel_matrix_train, t) > 0 else -1 
                 #Update weights
-                if y_hat != y:
-                    alpha_training[t] += y
+                if y_hat != y_train[t]:
+                    alpha_training[t] += y_train[t]
                     m +=1
-            print(t, m, float(m)*100/t)
+            training_accuracy = 1 - (float(m)/n_samples)
+            epoch_val_acc = self.val_accuracy(kernel_matrix_val, y_val, alpha_training)
+            if epoch_val_acc > best_val_accuracy:
+                epochs_since_val_acc_improvement = 0
+                best_val_accuracy = epoch_val_acc
+                self.saved_alpha = alpha_training
+            else:
+                epochs_since_val_acc_improvement += 1
+            print(f"{epoch} {training_accuracy:.4f} {epoch_val_acc:.4f} {best_val_accuracy:.4f}")
 
-        self.set_support_vectors(alpha_training, data.images)
+        self.set_support_vectors(self.saved_alpha, x_train)
 
-    def set_support_vectors(self, alpha_training, training_images):
-        # Non zero alphas and corresponding training image stored in object
-        support_vector_indicies = np.nonzero(alpha_training)
-        self.alpha = alpha_training[support_vector_indicies]
-        self.support_vectors = training_images[support_vector_indicies]
-
+    def classify_labels(self, labels):
+        return np.where(labels == self.class_label, 1, -1)
+    
     @staticmethod
     def distance_to_hyperplane(alpha, kernel_matrix, t):
-        # Base kernel perceptron algorithm
         return np.sum(alpha*kernel_matrix[:, t])
 
-    def calc_certainites(self, test_images):
-        certainties = np.zeros(len(test_images))
+    def set_support_vectors(self, alpha_training, training_X):
+        # Non zero alphas and corresponding training image stored in object
+        support_vector_indicies = np.nonzero(alpha_training)
+        self.saved_alpha = alpha_training[support_vector_indicies]
+        self.support_vectors = training_X[support_vector_indicies]
+
+    def calc_certainites(self, kernel_matrix, alpha):
         # Calc kernel image based off support vectors and predict using alphas
-        kernel_matrix = self.calc_kernel_matrix(self.support_vectors, test_images)
-        for t in range(len(test_images)):
-            certainties[t] = KernelPerceptron.distance_to_hyperplane(self.alpha, kernel_matrix, t)
+        n_samples = kernel_matrix.shape[1]
+        certainties = np.zeros(n_samples)
+        for t in range(n_samples):
+            certainties[t] = KernelPerceptron.distance_to_hyperplane(alpha, kernel_matrix, t)
         return certainties
 
-    def predict(self, test_images):
-        return np.where(self.calc_certainites(test_images) > 0, self.class_label, -1)
+    def predict(self, X, mapToClassLabels = True):
+        kernel_matrix = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, self.support_vectors, X)
+        certainties = self.calc_certainites(kernel_matrix, self.saved_alpha)
+        return np.where(certainties > 0, self.class_label, -1) if mapToClassLabels else certainties
+
+    def val_accuracy(self, kernel_matrix_val, y_val, alpha_training):
+        y_pred = np.where(self.calc_certainites(kernel_matrix_val, alpha_training) > 0, 1, -1)
+        return np.count_nonzero(y_pred==y_val) / float(len(y_val))
 
     def saveModel(self):
         timestampStr = datetime.now().strftime("%d_%b_%H_%M_%S")
@@ -79,12 +93,13 @@ class KernelPerceptron():
 
 if __name__ == "__main__":
     t1 = time.time()
-    data = MnistDigits(r"Data\dtrain123.dat")
-    model = KernelPerceptron(2, kernelFunctions.polynomial_kernel, 3)
-    model.train(data)
-    print(model.predict(data.images))
-    print(data.labels)
-    print(time.time() - t1)
+    data = MnistDigits(r"Data\dtrain123.dat").get_split_datasets(fraction_test=0.2, fraction_val=0.2)
+    model = KernelPerceptron(3, kernelFunctions.polynomial_kernel, 3)
+    model.train(data["images_train"], data["labels_train"], data["images_val"], data["labels_val"])
+    predict = model.predict(data["images_test"])
+    test_gt = np.where(data["labels_test"] == 3, 3, -1)
+    print("Test Acc:", np.count_nonzero(test_gt==predict) / float(len(test_gt)))
+    print("Time taken:", time.time() - t1)
     # model.saveModel()
     # print(model.infer(data.images))
 

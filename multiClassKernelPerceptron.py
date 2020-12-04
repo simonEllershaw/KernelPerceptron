@@ -15,28 +15,17 @@ class MultiClassKernelPerceptron():
         for label in class_labels:
             self.perceptrons.append(KernelPerceptron(label, kernel, hyperparameters))
 
-    def calc_symetric_kernel_matrix(self, data):
-        # Kernels used are symetric so at training time so is the kernel matrix
-        # Hence calculate top half of matrix and then reflect
-        n_samples = len(data)
-        kernel_matrix = np.zeros((n_samples, n_samples))
-        for i in range(n_samples):
-            for j in range(i, n_samples):
-                kernel_matrix[i,j] = self.kernel(data[i], data[j], self.hyperparameters)
-        # Reflection
-        kernel_matrix = kernel_matrix + kernel_matrix.T - np.diag(kernel_matrix.diagonal())
-        return kernel_matrix
-
-    def train(self, data):
-        kernel_matrix = self.calc_symetric_kernel_matrix(data.images)
+    def train(self, x_train, y_train, x_val, y_val):
+        kernel_matrix_train = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train)
+        kernel_matrix_val = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train, x_val)
         for model in self.perceptrons:
-            model.train(data, kernel_matrix)
+            model.train(x_train, y_train, x_val, y_val, kernel_matrix_train, kernel_matrix_val)
 
-    def predict(self, test_images):
+    def predict(self, X):
         # Each model gives certainty that image belongs to its class
-        perceptron_certainities = np.zeros((len(test_images), len(self.perceptrons)))
+        perceptron_certainities = np.zeros((len(X), len(self.perceptrons)))
         for i, perceptron in enumerate(self.perceptrons):
-            perceptron_certainities[:, i] = perceptron.calc_certainites(test_images)
+            perceptron_certainities[:, i] = perceptron.predict(X, mapToClassLabels=False)
         # Index of perceptron with max certainty
         index_max_certainity_perceptron = np.argmax(perceptron_certainities, axis = 1)
         # Return class label for most certain perceptron for each image 
@@ -54,9 +43,9 @@ class MultiClassKernelPerceptron():
 
 if __name__ == "__main__":
     t1 = time.time()
-    data = MnistDigits(r"Data\dtrain123.dat")
-    model = MultiClassKernelPerceptron([1,2,3], kernelFunctions.polynomial_kernel, 3)
-    model.train(data)
-    print(model.predict(data.images))
-    print(data.labels)
+    data = MnistDigits(r"Data\zipCombo.dat").get_split_datasets(fraction_test=0.2, fraction_val=0.2)
+    model = MultiClassKernelPerceptron(np.arange(0,10), kernelFunctions.polynomial_kernel, 3)
+    model.train(data["images_train"], data["labels_train"], data["images_val"], data["labels_val"])
+    predict = model.predict(data["images_test"])
+    print(np.count_nonzero(data["labels_test"]==predict) / float(len(data["images_test"])))
     print(time.time() - t1)
