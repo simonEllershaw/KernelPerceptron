@@ -3,6 +3,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch
 import time
+import os
+from datetime import datetime
 
 from mnistDigitLoaderPyTorch import MnistDigitsPytorch
 
@@ -30,23 +32,17 @@ class LeNet5(nn.Module):
         x = torch.nn.functional.relu(self.fc1(x))
         x = torch.nn.functional.relu(self.fc2(x))
         x = self.fc3(x)
-        return F.log_softmax(x, dim=1)
+        return x
 
-def train(
-    model,
-    dataloaders,
-    device,
-    criterion,
-    optimizer,
-    # directory,
-):
-    dataset_sizes = {x: len(dataloaders[x]) for x in ["train", "val"]}
-
+def train(model, dataloaders, device, criterion, optimizer):#, directory,
+    dataset_sizes = {x: len(dataloaders[x])* dataloaders[x].batch_size for x in ["train", "val"]}
     best_loss = float("inf")
     numberEpochsWtNoImprovement = 0
     epoch = 0
-    # for epoch in range(num_epochs):
-    while numberEpochsWtNoImprovement < 3:
+    timestampStr = datetime.now().strftime("%d_%b_%H_%M_%S")
+    checkpoint_fname = os.path.join("savedModels", f"LeNet5_{timestampStr}.tar")
+
+    while numberEpochsWtNoImprovement < 2:
         epoch += 1
         trainLoss = 0
         valLoss = 0
@@ -54,10 +50,7 @@ def train(
 
         # Each epoch has a training and validation phase
         for phase in ["train", "val"]:
-            if phase == "train":
-                model.train()
-            else:
-                model.eval()
+            model.train() if phase == "train" else model.eval()
 
             running_loss = 0.0
             for source, target in dataloaders[phase]:
@@ -72,7 +65,6 @@ def train(
                         optimizer.zero_grad()
                         loss.backward()
                         optimizer.step()
-                # statistics
                 running_loss += loss.item()
 
             epoch_loss = running_loss / dataset_sizes[phase]
@@ -83,7 +75,7 @@ def train(
                 # Improvement has to be at least by 0.1%
                 if epoch_loss < best_loss * 0.999:
                     best_loss = epoch_loss
-                    # saveCheckpoint(epoch, model, optimizer, loss, directory)
+                    torch.save(model.state_dict(), checkpoint_fname)
                     numberEpochsWtNoImprovement = 0
                 else:
                     numberEpochsWtNoImprovement += 1
@@ -96,31 +88,18 @@ def train(
         print(f"{epoch} {trainLoss} {valLoss} {best_loss} {epochTime} \n")
 
 
-def saveCheckpoint(epoch, model, optimizer, loss, directory):
-    torch.save(
-        {
-            "epoch": epoch,
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-            "loss": loss,
-        },
-        os.path.join(directory, "model.tar"),
-    )
 
-def test():
-    network.eval()
-    test_loss = 0
+def evaluate(model, dataset):
+    print(len(dataset))
+    model.eval()
     correct = 0
     with torch.no_grad():
-        for data, target in test_loader:
-            output = network(data)
-            pred = output.data.max(1, keepdim=True)[1]
-            correct += pred.eq(target.data.view_as(pred)).sum()
-    return test_loss / len(test_loader.dataset)
-    # test_losses.append(test_loss)
-    # print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-    #     test_loss, correct, len(test_loader.dataset),
-    #     100. * correct / len(test_loader.dataset)))
+        for data, target in dataset:
+            output = model(data)
+            _, pred = torch.max(output, dim=1)
+            correct += (pred == target).sum().item()
+    num_samples = len(dataset) * dataset.batch_size
+    return correct / num_samples
 
 if __name__ == "__main__":
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -129,6 +108,9 @@ if __name__ == "__main__":
     momentum = 0.5
     optimizer = optim.SGD(model.parameters(), lr=learning_rate,
                       momentum=momentum)
-    criterion = F.nll_loss
+    criterion = nn.CrossEntropyLoss()
     dataloaders = MnistDigitsPytorch.getDataLoader(12, "Data\zipcombo.dat")
     train(model, dataloaders, device, criterion, optimizer,)
+    # model.load_state_dict(torch.load("savedModels\LeNet5_10_Dec_17_55_51.tar"))
+    # test_acc = evaluate(model, dataloaders["test"])
+    # print(test_acc)

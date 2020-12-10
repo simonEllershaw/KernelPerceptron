@@ -23,15 +23,15 @@ class MnistDigitsPytorch(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         image = self.images[idx].reshape(1, MnistDigits.image_size, MnistDigits.image_size)
-        label = self.get_one_hot_encode_label(idx)
+        # label = self.get_one_hot_encode_label(idx)
         return image.astype(np.float32), self.labels[idx]
     
-    def get_one_hot_encode_label(self, idx):
-        # Hard coded that there are 10 digits sorry :(
-        label = np.zeros(10)
-        class_label = int(self.labels[idx])
-        label[class_label] = 1.0
-        return label
+    # def get_one_hot_encode_label(self, idx):
+    #     # Hard coded that there are 10 digits sorry :(
+    #     label = np.zeros(10)
+    #     class_label = int(self.labels[idx])
+    #     label[class_label] = 1.0
+    #     return label
     
     @staticmethod 
     def getDataLoader(batchSize, fname):
@@ -42,16 +42,19 @@ class MnistDigitsPytorch(Dataset):
                 MnistDigitsPytorchData["train"],
                 batch_size=batchSize,
                 shuffle=True,
+                drop_last= True,
             ),
             "val": torch.utils.data.DataLoader(
                 MnistDigitsPytorchData["val"],
                 batch_size=batchSize,
                 shuffle=False,
+                drop_last= True
             ),
             "test": torch.utils.data.DataLoader(
                 MnistDigitsPytorchData["test"],
                 batch_size=batchSize,
                 shuffle=False,
+                drop_last= True
             ),
         }
 
