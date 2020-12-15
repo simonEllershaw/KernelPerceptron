@@ -7,6 +7,7 @@ import os
 from datetime import datetime
 
 from mnistDigitLoaderPyTorch import MnistDigitsPytorch
+from mnistDigitLoader import MnistDigits
 
 class LeNet5(nn.Module):
     """
@@ -34,14 +35,14 @@ class LeNet5(nn.Module):
         x = self.fc3(x)
         return x
 
-def train(model, dataloaders, device, criterion, optimizer):
+def train_model(model, dataloaders, device, criterion, optimizer):
     # Initialise training parameters
     dataset_sizes = {x: len(dataloaders[x])* dataloaders[x].batch_size for x in ["train", "val"]}
+
     best_loss = float("inf")
     numberEpochsWtNoImprovement = 0
     epoch = 0
-    timestampStr = datetime.now().strftime("%d_%b_%H_%M_%S")
-    fname = os.path.join("savedModels", f"LeNet5_{timestampStr}")
+    print("|Epoch|Train Loss|Val Loss|Best Loss|Epoch Time|")
 
     # Convergence criteria
     while numberEpochsWtNoImprovement < 2:
@@ -80,7 +81,7 @@ def train(model, dataloaders, device, criterion, optimizer):
                 # Improvement has to be at least by 0.1%
                 if epoch_loss < best_loss * 0.999:
                     best_loss = epoch_loss
-                    torch.save(model.state_dict(), f"{fname}.tar")
+                    best_model_state_dict = model.state_dict()
                     numberEpochsWtNoImprovement = 0
                 else:
                     numberEpochsWtNoImprovement += 1
@@ -89,35 +90,35 @@ def train(model, dataloaders, device, criterion, optimizer):
         epochTime = epochEnd - epochStart
 
         # Write metrics to file at end of each epoch
-        with open(f"{fname}_metrics.txt", "a+") as metric_file:
-            metric_file.write(f"{epoch} {trainLoss} {valLoss} {best_loss} {epochTime} \n")
+        print(f"{epoch} {trainLoss:.4f} {valLoss:.4f} {best_loss:.4f} {epochTime:.4f}")
+    model.load_state_dict(best_model_state_dict)
 
-
-
-def evaluate(model, dataset):
-    model.eval()
-    correct = 0
-    # Iterate over data and count correct predictions
-    with torch.no_grad():
-        for data, target in dataset:
-            output = model(data)
-            _, pred = torch.max(output, dim=1)
-            correct += (pred == target).sum().item()
-    # Return accuracy
-    num_samples = len(dataset) * dataset.batch_size
-    return correct / num_samples
-
-if __name__ == "__main__":
+def train(model, dataloaders):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = LeNet5().to(device).float()
+    model.to(device).float()
     learning_rate = 0.01
     momentum = 0.5
     optimizer = optim.SGD(model.parameters(), lr=learning_rate,
                       momentum=momentum)
     criterion = nn.CrossEntropyLoss()
-    dataloaders = MnistDigitsPytorch.getDataLoader(12, "Data\zipcombo.dat")
-    train(model, dataloaders, device, criterion, optimizer,)
-    test_acc = evaluate(model, dataloaders["test"])
-    print(test_acc)
+    train_model(model, dataloaders, device, criterion, optimizer)
 
-    # model.load_state_dict(torch.load("savedModels\LeNet5_10_Dec_17_55_51.tar"))
+def predict(model, dataset):
+    model.eval()
+    preds = []
+    # Iterate over data and make prediction
+    with torch.no_grad():
+        for data, target in dataset:
+            output = model(data)
+            _, pred_batch = torch.max(output, dim=1)
+            preds.append(pred_batch)
+    # Turns list of batch predictions to 1D numpy array
+    # This conforms with the other numpy implemented models
+    return torch.flatten(torch.cat(preds)).detach().numpy()
+
+if __name__ == "__main__":
+    dataloaders = MnistDigitsPytorch.getDataLoader(MnistDigits("Data\zipcombo.dat").get_split_datasets(), 12)
+    model = LeNet5()
+    train(model, dataloaders)
+    # model.load_state_dict(torch.load("savedModels\LeNet5_15_Dec_12_36_49.tar"))
+    predictions = predict(model, dataloaders["test"])

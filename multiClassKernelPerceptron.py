@@ -9,7 +9,7 @@ import numpy as np
 class MultiClassKernelPerceptron():
     """One vs all multi class kernel perceptron"""
 
-    def __init__(self, class_labels, kernel, hyperparameters=None):
+    def __init__(self, kernel, hyperparameters=None):
         self.perceptrons = []
         self.kernel = kernel
         self.hyperparameters = hyperparameters
@@ -31,7 +31,7 @@ class MultiClassKernelPerceptron():
         # Index of perceptron with max certainty
         index_max_certainity_perceptron = np.argmax(perceptron_certainities, axis = 1)
         # Return class label for most certain perceptron for each image 
-        return [self.perceptrons[i].class_label for i in index_max_certainity_perceptron]
+        return np.array([self.perceptrons[i].class_label for i in index_max_certainity_perceptron])
 
     def saveModel(self):
         timestampStr = datetime.now().strftime("%d_%b_%H_%M_%S")
