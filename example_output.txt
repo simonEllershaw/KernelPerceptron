@@ -1,0 +1,319 @@
+--------Iteration 0-----------
+Train Kernel Perceptron
+Training Class 0.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9679 0.9812 0.9812
+2 0.9824 0.9855 0.9855
+3 0.9846 0.9822 0.9855
+4 0.9842 0.9817 0.9855
+Training Class 1.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9839 0.9968 0.9968
+2 0.9916 0.9973 0.9973
+3 0.9916 0.9984 0.9984
+4 0.9935 0.9973 0.9984
+5 0.9932 0.9962 0.9984
+Training Class 2.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9565 0.9763 0.9763
+2 0.9701 0.9736 0.9763
+3 0.9710 0.9812 0.9812
+4 0.9708 0.9812 0.9812
+5 0.9740 0.9742 0.9812
+Training Class 3.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9575 0.9769 0.9769
+2 0.9699 0.9753 0.9769
+3 0.9756 0.9769 0.9769
+Training Class 4.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9518 0.9086 0.9086
+2 0.9645 0.9629 0.9629
+3 0.9676 0.9597 0.9629
+4 0.9690 0.9618 0.9629
+Training Class 5.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9522 0.9408 0.9408
+2 0.9636 0.9580 0.9580
+3 0.9676 0.9602 0.9602
+4 0.9690 0.9602 0.9602
+5 0.9719 0.9505 0.9602
+Training Class 6.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9647 0.9796 0.9796
+2 0.9783 0.9833 0.9833
+3 0.9823 0.9833 0.9833
+4 0.9837 0.9742 0.9833
+Training Class 7.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9694 0.9844 0.9844
+2 0.9837 0.9817 0.9844
+3 0.9817 0.9769 0.9844
+Training Class 8.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9491 0.9693 0.9693
+2 0.9624 0.9726 0.9726
+3 0.9643 0.9736 0.9736
+4 0.9659 0.9710 0.9736
+5 0.9670 0.9715 0.9736
+Training Class 9.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9491 0.9672 0.9672
+2 0.9625 0.9704 0.9704
+3 0.9672 0.9484 0.9704
+4 0.9649 0.9742 0.9742
+5 0.9686 0.9715 0.9742
+6 0.9663 0.9537 0.9742
+Train Vanilla Perceptron
+Training Class 0.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9835 0.9817 0.9817
+2 0.9937 0.9882 0.9882
+3 0.9984 0.9925 0.9925
+4 0.9995 0.9914 0.9925
+5 1.0000 0.9914 0.9925
+Training Class 1.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9880 0.9989 0.9989
+2 0.9950 0.9978 0.9989
+3 0.9966 0.9968 0.9989
+Training Class 2.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9744 0.9887 0.9887
+2 0.9925 0.9909 0.9909
+3 0.9952 0.9887 0.9909
+4 0.9986 0.9925 0.9925
+5 0.9987 0.9914 0.9925
+6 0.9982 0.9909 0.9925
+Training Class 3.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9747 0.9871 0.9871
+2 0.9928 0.9860 0.9871
+3 0.9961 0.9892 0.9892
+4 0.9993 0.9892 0.9892
+5 0.9984 0.9892 0.9892
+Training Class 4.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9699 0.9817 0.9817
+2 0.9903 0.9887 0.9887
+3 0.9932 0.9903 0.9903
+4 0.9948 0.9882 0.9903
+5 0.9961 0.9887 0.9903
+Training Class 5.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9740 0.9812 0.9812
+2 0.9905 0.9828 0.9828
+3 0.9966 0.9898 0.9898
+4 0.9984 0.9887 0.9898
+5 0.9980 0.9909 0.9909
+6 0.9980 0.9898 0.9909
+7 0.9996 0.9892 0.9909
+Training Class 6.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9799 0.9892 0.9892
+2 0.9948 0.9898 0.9898
+3 0.9986 0.9925 0.9925
+4 0.9986 0.9952 0.9952
+5 0.9973 0.9925 0.9952
+6 0.9991 0.9946 0.9952
+Training Class 7.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9783 0.9866 0.9866
+2 0.9950 0.9925 0.9925
+3 0.9959 0.9882 0.9925
+4 0.9968 0.9930 0.9930
+5 0.9966 0.9855 0.9930
+6 0.9982 0.9925 0.9930
+Training Class 8.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9724 0.9849 0.9849
+2 0.9937 0.9844 0.9849
+3 0.9948 0.9855 0.9855
+4 0.9971 0.9849 0.9855
+5 0.9978 0.9866 0.9866
+6 0.9986 0.9887 0.9887
+7 0.9996 0.9876 0.9887
+8 0.9995 0.9882 0.9887
+Training Class 9.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9695 0.9844 0.9844
+2 0.9914 0.9882 0.9882
+3 0.9930 0.9849 0.9882
+4 0.9964 0.9876 0.9882
+Train SVM Perceptron
+Train CNN Perceptron
+|Epoch|Train Loss|Val Loss|Best Loss|Epoch Time|
+1 0.1363 0.0502 0.0502 2.3746
+2 0.0354 0.0272 0.0272 2.3138
+3 0.0224 0.0197 0.0197 2.4315
+4 0.0165 0.0186 0.0186 2.4076
+5 0.0133 0.0127 0.0127 2.4125
+6 0.0109 0.0129 0.0127 2.4086
+7 0.0090 0.0156 0.0127 2.5432
+Predict Kernel Perceptron
+Predict Vanilla Perceptron
+Predict SVM Perceptron
+Predict CNN Perceptron
+
+.....
+.....
+.....
+
+--------Iteration 9-----------
+Train Kernel Perceptron
+Training Class 0.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9667 0.9790 0.9790
+2 0.9790 0.9844 0.9844
+3 0.9828 0.9855 0.9855
+4 0.9862 0.9844 0.9855
+5 0.9862 0.9785 0.9855
+Training Class 1.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9837 0.9898 0.9898
+2 0.9910 0.9941 0.9941
+3 0.9928 0.9903 0.9941
+4 0.9921 0.9919 0.9941
+Training Class 2.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9579 0.9677 0.9677
+2 0.9706 0.9736 0.9736
+3 0.9711 0.9769 0.9769
+4 0.9726 0.9704 0.9769
+5 0.9726 0.9769 0.9769
+Training Class 3.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9539 0.9758 0.9758
+2 0.9668 0.9731 0.9758
+3 0.9690 0.9731 0.9758
+Training Class 4.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9495 0.9736 0.9736
+2 0.9611 0.9462 0.9736
+3 0.9668 0.9317 0.9736
+Training Class 5.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9496 0.9591 0.9591
+2 0.9647 0.9747 0.9747
+3 0.9706 0.9607 0.9747
+4 0.9720 0.9731 0.9747
+Training Class 6.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9640 0.9806 0.9806
+2 0.9794 0.9537 0.9806
+3 0.9803 0.9774 0.9806
+Training Class 7.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9654 0.9892 0.9892
+2 0.9799 0.9909 0.9909
+3 0.9812 0.9887 0.9909
+4 0.9815 0.9887 0.9909
+Training Class 8.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9473 0.9398 0.9398
+2 0.9586 0.9182 0.9398
+3 0.9604 0.9537 0.9537
+4 0.9625 0.9618 0.9618
+5 0.9638 0.9252 0.9618
+6 0.9656 0.8989 0.9618
+Training Class 9.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9468 0.9747 0.9747
+2 0.9597 0.9763 0.9763
+3 0.9688 0.9763 0.9763
+4 0.9677 0.9731 0.9763
+Train Vanilla Perceptron
+Training Class 0.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9839 0.9887 0.9887
+2 0.9966 0.9930 0.9930
+3 0.9964 0.9935 0.9935
+4 0.9973 0.9946 0.9946
+5 0.9993 0.9935 0.9946
+6 0.9993 0.9930 0.9946
+Training Class 1.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9885 0.9962 0.9962
+2 0.9966 0.9957 0.9962
+3 0.9961 0.9973 0.9973
+4 0.9975 0.9968 0.9973
+5 0.9984 0.9973 0.9973
+Training Class 2.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9740 0.9871 0.9871
+2 0.9909 0.9898 0.9898
+3 0.9971 0.9887 0.9898
+4 0.9978 0.9892 0.9898
+Training Class 3.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9715 0.9876 0.9876
+2 0.9934 0.9882 0.9882
+3 0.9962 0.9909 0.9909
+4 0.9987 0.9925 0.9925
+5 0.9995 0.9909 0.9925
+6 0.9996 0.9935 0.9935
+7 1.0000 0.9935 0.9935
+8 1.0000 0.9935 0.9935
+Training Class 4.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9694 0.9769 0.9769
+2 0.9889 0.9892 0.9892
+3 0.9943 0.9871 0.9892
+4 0.9957 0.9925 0.9925
+5 0.9966 0.9785 0.9925
+6 0.9977 0.9914 0.9925
+Training Class 5.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9744 0.9844 0.9844
+2 0.9916 0.9898 0.9898
+3 0.9962 0.9882 0.9898
+4 0.9959 0.9898 0.9898
+Training Class 6.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9805 0.9860 0.9860
+2 0.9944 0.9925 0.9925
+3 0.9968 0.9909 0.9925
+4 0.9984 0.9914 0.9925
+Training Class 7.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9776 0.9903 0.9903
+2 0.9941 0.9946 0.9946
+3 0.9962 0.9935 0.9946
+4 0.9980 0.9962 0.9962
+5 0.9973 0.9952 0.9962
+6 0.9986 0.9946 0.9962
+Training Class 8.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9717 0.9817 0.9817
+2 0.9907 0.9849 0.9849
+3 0.9937 0.9882 0.9882
+4 0.9962 0.9892 0.9892
+5 0.9962 0.9849 0.9892
+6 0.9973 0.9882 0.9892
+Training Class 9.0
+Epoch|Train Acc|Val Acc|Best Val Acc|
+1 0.9717 0.9855 0.9855
+2 0.9875 0.9898 0.9898
+3 0.9944 0.9909 0.9909
+4 0.9968 0.9898 0.9909
+5 0.9980 0.9876 0.9909
+Train SVM Perceptron
+Train CNN Perceptron
+|Epoch|Train Loss|Val Loss|Best Loss|Epoch Time|
+1 0.1822 0.1436 0.1436 2.2998
+2 0.0600 0.0253 0.0253 2.3557
+3 0.0227 0.0167 0.0167 2.5183
+4 0.0152 0.0133 0.0133 2.3088
+5 0.0115 0.0098 0.0098 2.3697
+6 0.0093 0.0074 0.0074 2.3318
+7 0.0076 0.0085 0.0074 2.5602
+8 0.0064 0.0092 0.0074 2.3926
+Predict Kernel Perceptron
+Predict Vanilla Perceptron
+Predict SVM Perceptron
+Predict CNN Perceptron
+|Model|Train Time +- Err|Predict Time +- Err|Accuracy +- Err|
+|kernel_perceptron | 113.851 1.685 | 11.527 0.171 | 0.963 0.002|
+|vanilla_perceptron | 94.911 1.602 | 17.326 0.232 | 0.894 0.005|
+|svm | 10.800 0.140 | 2.118 0.009 | 0.961 0.001|
+|cnn | 23.797 1.642 | 0.250 0.013 | 0.961 0.003|

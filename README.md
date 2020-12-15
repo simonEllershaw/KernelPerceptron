@@ -24,9 +24,9 @@ The kernel perceptron model was compared to 3 others:
 
 The results shown in the table below are an average over 5 runs of each algorothim. It is of note that an extenisive hyperparamter search has not been undertaken for any of the models.
 
-| Model             | Training Time\s | Inference Time\s | Accuracy\\% |
-|-------------------|-----------------|------------------|------------|
-| Perceptron        |                 |                  |            |
-| Kernel Perceptron |                 |                  |            |
-| SVM               |                 |                  |            |
-| LeNet5 CNN        |                 |                  |            |
+| Model                             | Training Time\s | Inference Time\s | Accuracy\\%  |
+|-----------------------------------|-----------------|------------------|-------------|
+| Kernel Perceptron                 | 114 ± 2   | 11.5 ± 0.2     | 0.963 ± 0.002 |
+| Vanilla Perceptron                | 95 ± 2    | 17.3 ± 0.2     | 0.894 ± 0.005 |
+| SVM (3rd Order Polynomial Kernel) | 10.8 ± 0.1    | 2.118 ± 0.009      | 0.961 ± 0.001 |
+| CNN- LeNet5                       | 24 ± 2    | 0.25 ± 0.01      | 0.961 ± 0.003 |
