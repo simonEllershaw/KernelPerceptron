@@ -1,9 +1,10 @@
-from mnistDigitLoader import MnistDigits
+from Data.mnistDigitLoader import MnistDigits
 import torch
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 
 class MnistDigitsPytorch(Dataset):
+    # Pytorch dataloader required for CNN
     def __init__(self, data, mode):
         if mode == "train":
             self.images = data["images_train"]
@@ -21,6 +22,7 @@ class MnistDigitsPytorch(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
+        # CNN takes 2D not 1D input (unlike other models in this repo)
         image = self.images[idx].reshape(1, MnistDigits.image_size, MnistDigits.image_size)
         return image.astype(np.float32), self.labels[idx]
 
@@ -51,8 +53,3 @@ class MnistDigitsPytorch(Dataset):
         }
 
         return dataloaders
-    
-if __name__ == "__main__":
-    data = MnistDigits(r"Data\zipcombo.dat").get_split_datasets()
-    dataset = MnistDigitsPytorch(data, "train")
-    print(dataset[0])

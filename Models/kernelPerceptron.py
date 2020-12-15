@@ -1,5 +1,4 @@
-from mnistDigitLoader import MnistDigits
-import kernelFunctions
+import Models.kernelFunctions as kernelFunctions
 import numpy as np
 from datetime import datetime
 import pickle
@@ -18,17 +17,19 @@ class KernelPerceptron():
         alpha_training = np.zeros(n_samples)
         y_train = self.classify_labels(y_train)
         y_val = self.classify_labels(y_val)
+        epochs_since_val_acc_improvement = 0
+        best_val_accuracy = -1
+        epoch = 0
         
+        # Calc kernel matrices if not given in function call
         if kernel_matrix_train is None:
             kernel_matrix_train = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train, x_train)
         if kernel_matrix_val is None:
             kernel_matrix_val = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train, x_val)
-        
-        epochs_since_val_acc_improvement = 0
-        best_val_accuracy = -1
-        epoch = 0
 
+        # Table header
         print("Epoch|Train Acc|Val Acc|Best Val Acc|")
+        
         while(epochs_since_val_acc_improvement < 2):
             m = 0
             epoch += 1
@@ -40,8 +41,10 @@ class KernelPerceptron():
                     alpha_training[t] += y_train[t]
                     m +=1
             training_accuracy = 1 - (float(m)/n_samples)
+            # After each training loop check if val accuracy has increased
             epoch_val_acc = self.val_accuracy(kernel_matrix_val, y_val, alpha_training)
             if epoch_val_acc > best_val_accuracy:
+                # If it has save updated model
                 epochs_since_val_acc_improvement = 0
                 best_val_accuracy = epoch_val_acc
                 self.saved_alpha = alpha_training
@@ -90,16 +93,5 @@ class KernelPerceptron():
     def loadModel(savedModelFname):
         with open(savedModelFname, 'rb') as pickleFile:      
             return pickle.load(pickleFile)
-
-if __name__ == "__main__":
-    t1 = time.time()
-    data = MnistDigits(r"Data\dtrain123.dat").get_split_datasets()
-    model = KernelPerceptron(3, kernelFunctions.polynomial_kernel, 3)
-    model.train(data["images_train"], data["labels_train"], data["images_val"], data["labels_val"])
-    predict = model.predict(data["images_test"])
-    test_gt = np.where(data["labels_test"] == 3, 3, -1)
-    print("Test Acc:", np.count_nonzero(test_gt==predict) / float(len(test_gt)))
-    print("Time taken:", time.time() - t1)
-    # model.saveModel()
 
     

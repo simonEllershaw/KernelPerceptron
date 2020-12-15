@@ -6,9 +6,6 @@ import time
 import os
 from datetime import datetime
 
-from mnistDigitLoaderPyTorch import MnistDigitsPytorch
-from mnistDigitLoader import MnistDigits
-
 class LeNet5(nn.Module):
     """
         Reference https://github.com/bollakarthikeya/LeNet-5-PyTorch/blob/master/lenet5_cpu.py
@@ -34,6 +31,19 @@ class LeNet5(nn.Module):
         x = torch.nn.functional.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+
+def train(model, dataloaders):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model.to(device).float()
+
+    # Init training objects and parameters
+    # These have not been optimised by a hyperparemeter search
+    learning_rate = 0.01
+    momentum = 0.5
+    optimizer = optim.SGD(model.parameters(), lr=learning_rate,
+                      momentum=momentum)
+    criterion = nn.CrossEntropyLoss()
+    train_model(model, dataloaders, device, criterion, optimizer)
 
 def train_model(model, dataloaders, device, criterion, optimizer):
     # Initialise training parameters
@@ -93,16 +103,6 @@ def train_model(model, dataloaders, device, criterion, optimizer):
         print(f"{epoch} {trainLoss:.4f} {valLoss:.4f} {best_loss:.4f} {epochTime:.4f}")
     model.load_state_dict(best_model_state_dict)
 
-def train(model, dataloaders):
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model.to(device).float()
-    learning_rate = 0.01
-    momentum = 0.5
-    optimizer = optim.SGD(model.parameters(), lr=learning_rate,
-                      momentum=momentum)
-    criterion = nn.CrossEntropyLoss()
-    train_model(model, dataloaders, device, criterion, optimizer)
-
 def predict(model, dataset):
     model.eval()
     preds = []
@@ -115,10 +115,3 @@ def predict(model, dataset):
     # Turns list of batch predictions to 1D numpy array
     # This conforms with the other numpy implemented models
     return torch.flatten(torch.cat(preds)).detach().numpy()
-
-if __name__ == "__main__":
-    dataloaders = MnistDigitsPytorch.getDataLoader(MnistDigits("Data\zipcombo.dat").get_split_datasets(), 12)
-    model = LeNet5()
-    train(model, dataloaders)
-    # model.load_state_dict(torch.load("savedModels\LeNet5_15_Dec_12_36_49.tar"))
-    predictions = predict(model, dataloaders["test"])

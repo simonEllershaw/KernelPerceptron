@@ -1,7 +1,5 @@
-from kernelPerceptron import KernelPerceptron
-from mnistDigitLoader import MnistDigits
-import kernelFunctions
-from sklearn.metrics import classification_report, confusion_matrix
+from Models.kernelPerceptron import KernelPerceptron
+import Models.kernelFunctions as kernelFunctions
 
 import time
 import numpy as np
@@ -15,9 +13,10 @@ class MultiClassKernelPerceptron():
         self.hyperparameters = hyperparameters
 
     def train(self, x_train, y_train, x_val, y_val):
+        # Create 1 perceptron for each unique label
         for label in np.unique(y_train):
             self.perceptrons.append(KernelPerceptron(label, self.kernel, self.hyperparameters))
-
+        # Kernel matrix are same for all classes so calc once and pass around
         kernel_matrix_train = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train)
         kernel_matrix_val = kernelFunctions.calc_kernel_matrix(self.kernel, self.hyperparameters, x_train, x_val)
         for model in self.perceptrons:
@@ -42,13 +41,3 @@ class MultiClassKernelPerceptron():
     def loadModel(savedModelFname):
         with open(savedModelFname, 'rb') as pickleFile:      
             return pickle.load(pickleFile)
-
-if __name__ == "__main__":
-    data = MnistDigits(r"Data\dtrain123.dat").get_split_datasets()
-
-    model = MultiClassKernelPerceptron(np.arange(0,10), kernelFunctions.polynomial_kernel, 3)
-    model.train(data["images_train"], data["labels_train"], data["images_val"], data["labels_val"])
-    y_pred = model.predict(data["images_test"])
-
-    print(confusion_matrix(data["labels_test"], y_pred))
-    print(classification_report(data["labels_test"], y_pred))

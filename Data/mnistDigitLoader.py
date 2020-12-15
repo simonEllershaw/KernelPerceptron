@@ -9,12 +9,12 @@ class MnistDigits():
 
     def __init__(self, fname):
         self.data = np.genfromtxt(fname)
-        
         self.images = self.data[:, MnistDigits.label_column+1:]
         self.labels = self.data[:, MnistDigits.label_column]
     
 
     def get_split_datasets(self, fraction_test=0.2, fraction_val=0.2):
+        # Returns dict with samples of correct proportions random shuffled
         num_samples = self.data.shape[0]
         divider_test = math.floor(fraction_test * num_samples)
         divider_val = divider_test + math.floor(fraction_val * num_samples)
@@ -36,7 +36,3 @@ class MnistDigits():
         plt.title(f"Label: {label}")
         plt.axis('off')
         plt.savefig("Output/digit.png")
-
-if __name__ == "__main__":
-    datasets = MnistDigits(r"Data\zipcombo.dat").get_split_datasets()
-    MnistDigits.visualise_sample(datasets["images_train"][0], datasets["labels_train"][0])
