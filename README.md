@@ -2,6 +2,8 @@
 
 This repo contains a numpy implementation of the kernel perceptron for the MNIST Digit classification task. The performance of the algorithm is compared empircally to that of the vanilla perceptron, SVM and CNN algorithms on the MNIST digit classifcation task.
 
+![Mnist Digit](Output/digit.png)
+
 ## Kernel Perceptron Algorithm
 
 This alogrithm is an extension of the basic kernel perceptron. However instead of a dot product between the input and support vectors a kernel operation is used. This allows the modelling of non-lineraties. The algorithm is summarised neatly by this [wikipedia post](https://en.wikipedia.org/wiki/Kernel_perceptron).
@@ -22,11 +24,23 @@ The kernel perceptron model was compared to 3 others:
 
 ## Results
 
-The results shown in the table below are an average over 5 runs of each algorothim. It is of note that an extenisive hyperparamter search has not been undertaken for any of the models.
+The results shown in the table below are an average over 10 runs of each algorothim. It is of note that an extenisive hyperparameter search has not been undertaken for any of the models.
 
 | Model                             | Training Time\s | Inference Time\s | Accuracy\\%  |
 |-----------------------------------|-----------------|------------------|-------------|
-| Kernel Perceptron                 | 114 ± 2   | 11.5 ± 0.2     | 0.963 ± 0.002 |
+| Kernel Perceptron  (3rd Order Polynomial Kernel) | 114 ± 2   | 11.5 ± 0.2     | 0.963 ± 0.002 |
 | Vanilla Perceptron                | 95 ± 2    | 17.3 ± 0.2     | 0.894 ± 0.005 |
 | SVM (3rd Order Polynomial Kernel) | 10.8 ± 0.1    | 2.118 ± 0.009      | 0.961 ± 0.001 |
-| CNN- LeNet5                       | 24 ± 2    | 0.25 ± 0.01      | 0.961 ± 0.003 |
+| CNN (LeNet5)                       | 24 ± 2    | 0.25 ± 0.01      | 0.961 ± 0.003 |
+
+Results shown here can be reproduced by running main.py
+
+## Discussion
+
+A few brief points
+
+1. There is no sig dif between the accuracy of the kernel perceptron, SVM and CNN models. This may be due to the relative simplicity of the task or lack of hyperparmeter tuning.
+2. The vanilla perceptron has significantly worse performance showing the problem is not lineraly seperable
+3. The large training times and infreence times for the perceptron algos is due to the calculation of the kernel matrix. However, the SVM algo requires the same operation but takes a factor of 10 less time. This points to a poor implementation. Further work / investigation may be able to  rectify this.
+4. Also the extension of the dataloader to Pytorch tensors is a little clumsy. Although this is a software engineering issue rather than an algorithmic issue
+

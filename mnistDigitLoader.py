@@ -34,10 +34,9 @@ class MnistDigits():
         image = image.reshape(MnistDigits.image_size, MnistDigits.image_size)
         plt.imshow(image)
         plt.title(f"Label: {label}")
-        plt.show()
+        plt.axis('off')
+        plt.savefig("Output/digit.png")
 
 if __name__ == "__main__":
     datasets = MnistDigits(r"Data\zipcombo.dat").get_split_datasets()
-    for key, data in datasets.items():
-        print(key, data.shape)
     MnistDigits.visualise_sample(datasets["images_train"][0], datasets["labels_train"][0])
